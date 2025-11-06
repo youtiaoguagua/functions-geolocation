@@ -24,7 +24,7 @@ export async function onRequest({ request }: { request: Request }): Promise<Resp
   let errorMessage: string | null = null;
 
   try {
-    const ipifyResponse = await fetch('https://ipapi.co/json');
+    const ipifyResponse = await fetch('https://whois.pconline.com.cn/ipJson.jsp?ip=&json=true');
     
     if (!ipifyResponse.ok) {
       throw new Error(`HTTP error! status: ${ipifyResponse.status}`);
