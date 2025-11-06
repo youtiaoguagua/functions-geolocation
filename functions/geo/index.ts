@@ -18,33 +18,42 @@ interface EORequest extends Request {
   };
 }
 
-export async function   onRequest({ request }: { request: EORequest }) {
-  // 2. 在 try 块外部声明 ipData 变量，并给一个初始值
-  let ipData = null;
-  let error = null;
+export async function onRequest({ request }: { request: Request }): Promise<Response> {
+  // 3. 在 try 块外部声明变量，并明确指定其类型
+  let ipData: IpInfo | null = null;
+  let errorMessage: string | null = null;
 
   try {
-    // 3. 使用标准的 fetch 获取公网IP信息
-    // ipapi.co 会返回更丰富的信息，包括IP、国家、城市等
+    // 使用标准的 fetch 获取公网IP信息
     const ipifyResponse = await fetch('https://ipapi.co/json');
     
     // 检查响应是否成功 (HTTP状态码 200-299)
     if (!ipifyResponse.ok) {
+      // 抛出一个错误，可以被 catch 块捕获
       throw new Error(`HTTP error! status: ${ipifyResponse.status}`);
     }
     
-    ipData = await ipifyResponse.json();
-  } catch (e) {
-    // 4. 捕获错误并存入 error 变量
+    // 4. 使用类型断言告诉 TypeScript fetch 的结果符合 IpInfo 接口
+    // 在生产环境中，你可能需要更严格的运行时验证来确保数据结构正确。
+    ipData = (await ipifyResponse.json()) as IpInfo;
+
+  } catch (e: unknown) { // 5. 在 TypeScript 中，catch 块的变量默认是 unknown 类型
     console.error('Failed to fetch public IP:', e);
-    error = e.message;
+    
+    // 6. 安全地处理 unknown 类型的错误
+    if (e instanceof Error) {
+      errorMessage = e.message;
+    } else {
+      // 如果抛出的不是一个 Error 对象，将其转换为字符串
+      errorMessage = String(e);
+    }
   }
 
-  // 5. 根据是否成功获取数据，返回不同的响应
-  const responseBody = {
-    success: error === null,
+  // 7. 构建最终的响应体，其类型符合 ApiResponse 接口
+  const responseBody: ApiResponse = {
+    success: errorMessage === null,
     data: ipData,
-    error: error,
+    error: errorMessage,
   };
 
   return new Response(JSON.stringify(responseBody, null, 2), {
