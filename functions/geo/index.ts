@@ -18,7 +18,7 @@ interface EORequest extends Request {
   };
 }
 
-export async  onRequest({ request }: { request: EORequest }) {
+export async function   onRequest({ request }: { request: EORequest }) {
   // 2. 在 try 块外部声明 ipData 变量，并给一个初始值
   let ipData = null;
   let error = null;
