@@ -18,7 +18,7 @@ interface EORequest extends Request {
   };
 }
 
-export function onRequest({ request }: { request: EORequest }) {
+export async function onRequest({ request }: { request: EORequest }) {
   const eo = request.eo;
   try{
 const ipifyResponse = await fetch('https://ipapi.co/json');
