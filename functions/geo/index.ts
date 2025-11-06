@@ -20,10 +20,11 @@ interface EORequest extends Request {
 
 export function onRequest({ request }: { request: EORequest }) {
   const eo = request.eo;
-
+const ipifyResponse = await fetch('https://ipapi.co/json');
+      const ipData = await ipifyResponse.json();
   return new Response(
     JSON.stringify({
-      eo,
+      ipData,
     }),
     {
       headers: {
