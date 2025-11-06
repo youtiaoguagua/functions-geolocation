@@ -20,8 +20,12 @@ interface EORequest extends Request {
 
 export function onRequest({ request }: { request: EORequest }) {
   const eo = request.eo;
+  try{
 const ipifyResponse = await fetch('https://ipapi.co/json');
       const ipData = await ipifyResponse.json();
+   } catch (error) {
+    console.error('Failed to fetch public IP:', error);
+  }
   return new Response(
     JSON.stringify({
       ipData,
